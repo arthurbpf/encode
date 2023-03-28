@@ -1,35 +1,58 @@
+import { setUserAddress } from '@/stores/ethers';
 import { ethers } from 'ethers';
 
-export function getDefaultProvider() {
-	return ethers.getDefaultProvider('goerli');
+export function isMetaMaskInstalled() {
+	return window && window.ethereum;
 }
 
-export function getBrowserProvider() {
-	let provider;
+export function getProvider() {
+	try {
+		let provider = new ethers.BrowserProvider(window.ethereum);
 
-	if (window.ethereum == null) {
-		console.log('MetaMask not installed; using read-only defaults');
-	} else {
-		provider = new ethers.BrowserProvider(window.ethereum);
+		return provider;
+	} catch (e) {
+		console.error('MetaMask not found!');
+	}
+}
+
+export async function getConnectedAccounts() {
+	const provider = getProvider();
+
+	if (provider) {
+		return await provider.listAccounts();
 	}
 
-	return provider;
+	return [];
 }
 
-export async function getSigner() {
-	let signer;
+export async function isConnected() {
+	const accounts = await getConnectedAccounts();
 
-	if (provider instanceof ethers.BrowserProvider) {
-		signer = await provider.getSigner();
+	return accounts.length > 0;
+}
+
+export async function getPrimaryAccountAddress() {
+	const accounts = await getConnectedAccounts();
+
+	return accounts[0]?.getAddress();
+}
+
+export async function connectWallet() {
+	try {
+		const { ethereum } = window;
+
+		if (!ethereum) {
+			alert('MetaMask encontrada!');
+			return;
+		}
+
+		const accounts = await ethereum.request({
+			method: 'eth_requestAccounts'
+		});
+
+		console.log('Connected', accounts[0]);
+		setUserAddress(accounts[0]);
+	} catch (error) {
+		console.error(error);
 	}
-
-	return signer;
-}
-
-export const defaultProvider = getDefaultProvider();
-export const provider = getBrowserProvider();
-export const signer = await getSigner();
-
-export async function getUserAddress() {
-	return await signer?.getAddress();
 }

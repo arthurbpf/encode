@@ -1,61 +1,17 @@
 import Head from 'next/head';
 import styles from '@/styles/Home.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import abi from '@/utils/WavePortal.json';
 import { ethers } from 'ethers';
-
-declare global {
-	interface Window {
-		ethereum?: any;
-	}
-}
+import { connectWallet, getPrimaryAccountAddress } from '@/utils/ethers';
+import { setUserAddress, useEthersStore } from '@/stores/ethers';
 
 export default function Home() {
-	const [currentAccount, setCurrentAccount] = useState('');
+	const userAddress = useEthersStore((state) => state.userAddress);
 
 	const checkIfWalletIsConnected = async () => {
-		try {
-			const { ethereum } = window;
-
-			if (!ethereum) {
-				console.error('Install MetaMask!');
-				return;
-			} else {
-				console.log('ethereum object was found!', ethereum);
-			}
-
-			const accounts = await ethereum.request({ method: 'eth_accounts' });
-
-			if (accounts.length !== 0) {
-				const account = accounts[0];
-				console.log('Connected account found:', account);
-				setCurrentAccount(account);
-			} else {
-				console.error('No connected account was found!');
-			}
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	const connectWallet = async () => {
-		try {
-			const { ethereum } = window;
-
-			if (!ethereum) {
-				alert('MetaMask encontrada!');
-				return;
-			}
-
-			const accounts = await ethereum.request({
-				method: 'eth_requestAccounts'
-			});
-
-			console.log('Conectado', accounts[0]);
-			setCurrentAccount(accounts[0]);
-		} catch (error) {
-			console.log(error);
-		}
+		const accountAddress = (await getPrimaryAccountAddress()) || '';
+		setUserAddress(accountAddress);
 	};
 
 	const wave = async () => {
@@ -77,10 +33,10 @@ export default function Home() {
 				console.log('Recuperado o número de tchauzinhos...', Number(count));
 
 				const waveTxn = await wavePortalContract.wave();
-				console.log('Minerando...', waveTxn.hash);
+				console.log('Mining...', waveTxn.hash);
 
 				await waveTxn.wait();
-				console.log('Minerado -- ', waveTxn.hash);
+				console.log('Mined -- ', waveTxn.hash);
 
 				count = await wavePortalContract.getTotalWaves();
 				console.log('Total de tchauzinhos recuperado...', Number(count));
@@ -109,7 +65,7 @@ export default function Home() {
 
 				<button onClick={wave}>Tchauzinho! 👋</button>
 
-				{!currentAccount && (
+				{!userAddress && (
 					<button onClick={connectWallet}>Conectar carteira</button>
 				)}
 			</main>
