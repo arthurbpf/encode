@@ -1,5 +1,8 @@
 import { setUserAddress } from '@/stores/ethers';
 import { ethers } from 'ethers';
+import { abi } from './Encode.json';
+
+export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
 export function isMetaMaskInstalled() {
 	return window && window.ethereum;
@@ -52,6 +55,42 @@ export async function connectWallet() {
 
 		console.log('Connected', accounts[0]);
 		setUserAddress(accounts[0]);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+interface getEncodeContractParams {
+	signed?: boolean;
+}
+
+export async function getEncodeContract({
+	signed = true
+}: getEncodeContractParams) {
+	const provider = getProvider();
+
+	if (provider) {
+		const signer = signed ? await provider.getSigner() : provider;
+
+		return new ethers.Contract(contractAddress, abi, signer);
+	}
+}
+
+interface mintTokenParams {
+	address: string;
+	uri: string;
+}
+
+export async function mintToken({ address, uri }: mintTokenParams) {
+	const contract = await getEncodeContract({ signed: true });
+
+	try {
+		if (contract) {
+			const tx = contract.safeMint(address, uri);
+			await tx;
+		} else {
+			throw new Error('Contract not found!');
+		}
 	} catch (error) {
 		console.error(error);
 	}
