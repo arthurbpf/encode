@@ -7,7 +7,6 @@ import {
 	mintToken
 } from '@/utils/ethers';
 import { setUserAddress, useEthersStore } from '@/stores/ethers';
-import { Button, Title } from '@mantine/core';
 
 export default function Home() {
 	const userAddress = useEthersStore((state) => state.userAddress);
@@ -38,12 +37,12 @@ export default function Home() {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className={styles.main}>
-				<Title>Encode</Title>
+				<h1>Encode</h1>
 
-				<Button onClick={onClickMint}>Tchauzinho! 👋</Button>
+				<button onClick={onClickMint}>Tchauzinho! 👋</button>
 
 				{!userAddress && (
-					<Button onClick={connectWallet}>Conectar carteira</Button>
+					<button onClick={connectWallet}>Conectar carteira</button>
 				)}
 			</main>
 		</>

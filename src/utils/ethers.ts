@@ -1,6 +1,6 @@
 import { setUserAddress } from '@/stores/ethers';
 import { ethers } from 'ethers';
-import { abi } from './Encode.json';
+import abi from './Encode.json';
 
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
@@ -72,7 +72,7 @@ export async function getEncodeContract({
 	if (provider) {
 		const signer = signed ? await provider.getSigner() : provider;
 
-		return new ethers.Contract(contractAddress, abi, signer);
+		return new ethers.Contract(contractAddress, abi.abi, signer);
 	}
 }
 
