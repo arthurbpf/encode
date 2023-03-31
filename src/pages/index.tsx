@@ -7,6 +7,7 @@ import {
 	mintToken
 } from '@/utils/ethers';
 import { setUserAddress, useEthersStore } from '@/stores/ethers';
+import Link from 'next/link';
 
 export default function Home() {
 	const userAddress = useEthersStore((state) => state.userAddress);
@@ -14,14 +15,6 @@ export default function Home() {
 	const checkIfWalletIsConnected = async () => {
 		const accountAddress = (await getPrimaryAccountAddress()) || '';
 		setUserAddress(accountAddress);
-	};
-
-	const onClickMint = async () => {
-		try {
-			mintToken({ address: await getPrimaryAccountAddress(), uri: 'teste' });
-		} catch (error) {
-			console.error(error);
-		}
 	};
 
 	useEffect(() => {
@@ -39,10 +32,12 @@ export default function Home() {
 			<main className={styles.main}>
 				<h1>Encode</h1>
 
-				<button onClick={onClickMint}>Tchauzinho! 👋</button>
-
-				{!userAddress && (
+				{!userAddress ? (
 					<button onClick={connectWallet}>Conectar carteira</button>
+				) : (
+					<Link href="/mint">
+						<button>Envie seus textos para a blockchain</button>
+					</Link>
 				)}
 			</main>
 		</>
