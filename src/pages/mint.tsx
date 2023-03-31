@@ -5,6 +5,8 @@ import styles from '@/styles/mint.module.scss';
 
 export default function Mint() {
 	const [text, setText] = useState('');
+	const [mintToThirdParty, setMintToThirdParty] = useState(false);
+	const [thirdPartyAdd, setThirdPartyAdd] = useState('');
 
 	const onClickMint = async () => {
 		try {
@@ -13,22 +15,51 @@ export default function Mint() {
 
 			ipfs.stop();
 
-			mintToken({ address: await getPrimaryAccountAddress(), uri: path });
+			mintToken({
+				address: mintToThirdParty
+					? thirdPartyAdd
+					: await getPrimaryAccountAddress(),
+				uri: path
+			});
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
 	return (
-		<>
-			<div className={styles.mainContainer}>
-				<textarea
-					value={text}
-					onChange={(event) => setText(event.target.value)}
-				/>
+		<div className={styles.mainContainer}>
+			<div>
+				<div>
+					<input
+						type="checkbox"
+						id="mintToThirdParty"
+						checked={mintToThirdParty}
+						onChange={(value) => {
+							console.log(value.target.value);
+							setMintToThirdParty((state) => !state);
+						}}
+					/>
+					<label htmlFor="mintToThirdParty">
+						Deseja enviar o token para uma outra conta?
+					</label>
+				</div>
 
-				<button onClick={onClickMint}>Mint</button>
+				{mintToThirdParty && (
+					<input
+						type="text"
+						placeholder="Endereço da conta"
+						value={thirdPartyAdd}
+						onChange={(event) => setThirdPartyAdd(event.target.value)}
+					/>
+				)}
 			</div>
-		</>
+
+			<textarea
+				value={text}
+				onChange={(event) => setText(event.target.value)}
+			/>
+
+			<button onClick={onClickMint}>Mint</button>
+		</div>
 	);
 }
