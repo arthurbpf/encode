@@ -1,7 +1,7 @@
 import { getPrimaryAccountAddress, mintToken } from '@/utils/ethers';
 import { useState } from 'react';
-import * as IPFS from 'ipfs-core';
 import styles from '@/styles/mint.module.scss';
+import { sendData } from '@/utils/ipfs';
 
 export default function Mint() {
 	const [text, setText] = useState('');
@@ -10,17 +10,16 @@ export default function Mint() {
 
 	const onClickMint = async () => {
 		try {
-			const ipfs = await IPFS.create();
-			const { path } = await ipfs.add(text);
-
-			ipfs.stop();
+			const ipfs = await sendData(text);
 
 			mintToken({
 				address: mintToThirdParty
 					? thirdPartyAdd
 					: await getPrimaryAccountAddress(),
-				uri: path
+				uri: ipfs
 			});
+
+			//TODO: Add a success message!
 		} catch (error) {
 			console.error(error);
 		}

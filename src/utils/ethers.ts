@@ -1,5 +1,6 @@
 import { setUserAddress } from '@/stores/ethers';
 import { ethers } from 'ethers';
+
 import abi from './Encode.json';
 
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -49,9 +50,7 @@ export async function connectWallet() {
 			return;
 		}
 
-		const accounts = await ethereum.request({
-			method: 'eth_requestAccounts'
-		});
+		const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 
 		console.log('Connected', accounts[0]);
 		setUserAddress(accounts[0]);
@@ -93,5 +92,30 @@ export async function mintToken({ address, uri }: mintTokenParams) {
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+export interface TokenInfo {
+	id: number;
+	uri: string;
+}
+
+export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
+	const contract = await getEncodeContract({ signed: false });
+
+	try {
+		if (contract) {
+			const tokens = await contract.getTokensOfOwner(address);
+
+			return tokens.map((token: any) => ({
+				uri: token.uri,
+				id: Number(token.id)
+			}));
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+		return [];
 	}
 }

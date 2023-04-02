@@ -1,11 +1,7 @@
 import Head from 'next/head';
 import styles from '@/styles/Home.module.css';
 import { useEffect } from 'react';
-import {
-	connectWallet,
-	getPrimaryAccountAddress,
-	mintToken
-} from '@/utils/ethers';
+import { connectWallet, getPrimaryAccountAddress } from '@/utils/ethers';
 import { setUserAddress, useEthersStore } from '@/stores/ethers';
 import Link from 'next/link';
 
