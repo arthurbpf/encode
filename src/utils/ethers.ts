@@ -78,14 +78,21 @@ export async function getEncodeContract({
 interface mintTokenParams {
 	address: string;
 	uri: string;
+	title: string;
+	description: string;
 }
 
-export async function mintToken({ address, uri }: mintTokenParams) {
+export async function mintToken({
+	address,
+	uri,
+	title,
+	description
+}: mintTokenParams) {
 	const contract = await getEncodeContract({ signed: true });
 
 	try {
 		if (contract) {
-			const tx = contract.safeMint(address, uri);
+			const tx = contract.safeMint(address, uri, title, description);
 			await tx;
 		} else {
 			throw new Error('Contract not found!');
@@ -98,6 +105,10 @@ export async function mintToken({ address, uri }: mintTokenParams) {
 export interface TokenInfo {
 	id: number;
 	uri: string;
+	title: string;
+	owner?: string;
+	description: string;
+	creationDate: Date;
 }
 
 export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
@@ -107,9 +118,14 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 		if (contract) {
 			const tokens = await contract.getTokensOfOwner(address);
 
+			if (tokens.length === 0) return [];
+
 			return tokens.map((token: any) => ({
+				id: Number(token.id),
 				uri: token.uri,
-				id: Number(token.id)
+				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
+				title: token.metadata.title,
+				description: token.metadata.description
 			}));
 		} else {
 			throw new Error('Contract not found!');
@@ -117,5 +133,31 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 	} catch (error) {
 		console.error(error);
 		return [];
+	}
+}
+
+export async function getTokenById(id: number): Promise<TokenInfo> {
+	const contract = await getEncodeContract({ signed: false });
+
+	try {
+		if (id < 0 || isNaN(id)) throw new Error('Invalid id!');
+
+		if (contract) {
+			const token = await contract.getToken(BigInt(id));
+
+			return {
+				id: Number(token.id),
+				uri: token.uri,
+				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
+				owner: token.owner,
+				title: token.metadata.title,
+				description: token.metadata.description
+			};
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+		return {} as TokenInfo;
 	}
 }

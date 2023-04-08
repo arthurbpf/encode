@@ -2,11 +2,14 @@ import { getPrimaryAccountAddress, mintToken } from '@/utils/ethers';
 import { useState } from 'react';
 import styles from '@/styles/mint.module.scss';
 import { sendData } from '@/utils/ipfs';
+import { Input } from '@/components/Primitives/Input';
 
 export default function Mint() {
 	const [text, setText] = useState('');
 	const [mintToThirdParty, setMintToThirdParty] = useState(false);
 	const [thirdPartyAdd, setThirdPartyAdd] = useState('');
+	const [title, setTitle] = useState('');
+	const [description, setDescription] = useState('');
 
 	const onClickMint = async () => {
 		try {
@@ -16,7 +19,9 @@ export default function Mint() {
 				address: mintToThirdParty
 					? thirdPartyAdd
 					: await getPrimaryAccountAddress(),
-				uri: ipfs
+				uri: ipfs,
+				title: title,
+				description: description
 			});
 
 			//TODO: Add a success message!
@@ -29,12 +34,11 @@ export default function Mint() {
 		<div className={styles.mainContainer}>
 			<div>
 				<div>
-					<input
+					<Input
 						type="checkbox"
 						id="mintToThirdParty"
 						checked={mintToThirdParty}
-						onChange={(value) => {
-							console.log(value.target.value);
+						onChange={() => {
 							setMintToThirdParty((state) => !state);
 						}}
 					/>
@@ -44,13 +48,24 @@ export default function Mint() {
 				</div>
 
 				{mintToThirdParty && (
-					<input
+					<Input
 						type="text"
 						placeholder="Endereço da conta"
 						value={thirdPartyAdd}
 						onChange={(event) => setThirdPartyAdd(event.target.value)}
 					/>
 				)}
+			</div>
+
+			<div>
+				<Input
+					value={title}
+					onChange={(event) => setTitle(event.target.value)}
+				/>
+				<Input
+					value={description}
+					onChange={(event) => setDescription(event.target.value)}
+				/>
 			</div>
 
 			<textarea

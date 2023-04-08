@@ -9,8 +9,14 @@ interface TokenCardProps {
 const TokenCard = ({ token }: TokenCardProps) => {
 	return (
 		<div>
-			<h3>{token.id}</h3>
-			{ipfsBaseUrl + token.uri}
+			<h2># {token.id}</h2>
+			<h3>{token.title}</h3>
+
+			<p>{token.description}</p>
+
+			<p>{token.creationDate.toString()}</p>
+
+			<a href={ipfsBaseUrl + token.uri}>{ipfsBaseUrl + token.uri}</a>
 		</div>
 	);
 };

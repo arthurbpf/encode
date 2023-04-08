@@ -24,8 +24,8 @@ const Tokens = () => {
 		<div>
 			<h1>Wallet Address: {walletAddress}</h1>
 
-			{tokens.map((token) => (
-				<TokenCard token={token} />
+			{tokens.map((token, index) => (
+				<TokenCard key={index} token={token} />
 			))}
 		</div>
 	);
