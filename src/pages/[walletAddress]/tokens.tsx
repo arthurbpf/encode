@@ -1,5 +1,5 @@
 import TokenCard from '@/components/TokenCard';
-import { getTokensOfOwner, TokenInfo } from '@/libutils/ethers';
+import { getTokensOfOwner, TokenInfo } from '@/lib/ethers';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -22,8 +22,11 @@ const Tokens = () => {
 
 	return (
 		<div>
-			<h1>Wallet Address: {walletAddress}</h1>
-
+			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+				Wallet Address
+				<br />
+				{walletAddress}
+			</h1>
 			{tokens.map((token, index) => (
 				<TokenCard key={index} token={token} />
 			))}
