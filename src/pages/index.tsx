@@ -1,9 +1,9 @@
 import Head from 'next/head';
-import styles from '@/styles/Home.module.css';
 import { useEffect } from 'react';
-import { connectWallet, getPrimaryAccountAddress } from '@/utils/ethers';
+import { connectWallet, getPrimaryAccountAddress } from '@/lib/ethers';
 import { setUserAddress, useEthersStore } from '@/stores/ethers';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
 	const userAddress = useEthersStore((state) => state.userAddress);
@@ -25,14 +25,14 @@ export default function Home() {
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className={styles.main}>
+			<main>
 				<h1>Encode</h1>
 
 				{!userAddress ? (
-					<button onClick={connectWallet}>Conectar carteira</button>
+					<Button onClick={connectWallet}>Conectar carteira</Button>
 				) : (
 					<Link href="/mint">
-						<button>Envie seus textos para a blockchain</button>
+						<Button>Envie seus textos para a blockchain</Button>
 					</Link>
 				)}
 			</main>

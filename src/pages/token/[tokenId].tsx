@@ -1,5 +1,5 @@
-import { getTokenById, TokenInfo } from '@/utils/ethers';
-import { retrieveData } from '@/utils/ipfs';
+import { getTokenById, TokenInfo } from '@/lib/ethers';
+import { retrieveData } from '@/lib/ipfs';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 

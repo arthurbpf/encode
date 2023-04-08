@@ -1,5 +1,5 @@
-import { TokenInfo } from '@/utils/ethers';
-import { ipfsBaseUrl } from '@/utils/ipfs';
+import { TokenInfo } from '@/lib/ethers';
+import { ipfsBaseUrl } from '@/lib/ipfs';
 
 interface TokenCardProps {
 	token: TokenInfo;

@@ -1,5 +1,5 @@
 import TokenCard from '@/components/TokenCard';
-import { getTokensOfOwner, TokenInfo } from '@/utils/ethers';
+import { getTokensOfOwner, TokenInfo } from '@/libutils/ethers';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 

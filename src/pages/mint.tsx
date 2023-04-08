@@ -1,8 +1,10 @@
-import { getPrimaryAccountAddress, mintToken } from '@/utils/ethers';
+import { getPrimaryAccountAddress, mintToken } from '@/lib/ethers';
 import { useState } from 'react';
-import styles from '@/styles/mint.module.scss';
-import { sendData } from '@/utils/ipfs';
-import { Input } from '@/components/Primitives/Input';
+import { sendData } from '@/lib/ipfs';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 export default function Mint() {
 	const [text, setText] = useState('');
@@ -31,16 +33,13 @@ export default function Mint() {
 	};
 
 	return (
-		<div className={styles.mainContainer}>
+		<div className="font-sans p-10 flex flex-col gap-5 h-screen">
 			<div>
-				<div>
-					<Input
-						type="checkbox"
+				<div className="flex justify-center align-center gap-2">
+					<Checkbox
 						id="mintToThirdParty"
+						onCheckedChange={(state) => setMintToThirdParty(!!state)}
 						checked={mintToThirdParty}
-						onChange={() => {
-							setMintToThirdParty((state) => !state);
-						}}
 					/>
 					<label htmlFor="mintToThirdParty">
 						Deseja enviar o token para uma outra conta?
@@ -57,23 +56,27 @@ export default function Mint() {
 				)}
 			</div>
 
-			<div>
+			<div className="flex flex-row gap-2">
 				<Input
+					placeholder="Título"
 					value={title}
 					onChange={(event) => setTitle(event.target.value)}
 				/>
 				<Input
+					placeholder="Descrição"
 					value={description}
 					onChange={(event) => setDescription(event.target.value)}
 				/>
 			</div>
 
-			<textarea
+			<Textarea
+				className="flex-grow"
+				placeholder="Digite o texto aqui"
 				value={text}
 				onChange={(event) => setText(event.target.value)}
 			/>
 
-			<button onClick={onClickMint}>Mint</button>
+			<Button onClick={onClickMint}>Mint</Button>
 		</div>
 	);
 }
