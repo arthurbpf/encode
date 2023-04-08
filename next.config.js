@@ -4,6 +4,7 @@ const nextConfig = {
 	webpack: (config, options) => ({
 		...config,
 		experiments: {
+			...config.experiments,
 			topLevelAwait: true
 		}
 	})

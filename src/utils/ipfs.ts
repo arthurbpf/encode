@@ -1,12 +1,18 @@
-import { BytesLike, toUtf8String } from 'ethers';
+import { toUtf8String } from 'ethers';
 import { create } from 'ipfs-http-client';
 
 export async function sendData(data: any) {
-	const client = create({ url: process.env.NEXT_PUBLIC_IPFS_API_URL });
+	const response = await fetch('/api/ipfs', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'text/plain'
+		},
+		body: data
+	});
 
-	const saveInfo = await client.add(data);
+	const { uri } = await response.json();
 
-	return saveInfo.path;
+	return uri.IpfsHash as string;
 }
 
 export async function retrieveData(hash: string) {
@@ -14,14 +20,14 @@ export async function retrieveData(hash: string) {
 		return '';
 	}
 
-	const client = create({ url: process.env.NEXT_PUBLIC_IPFS_API_URL });
+	const client = create();
 
 	let content = '';
 	for await (const chunk of client.cat(hash)) {
 		content += toUtf8String(chunk);
 	}
 
-	return content;
+	return JSON.parse(content);
 }
 
 export const ipfsBaseUrl = 'https://ipfs.io/ipfs/';
