@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Hammer } from 'lucide-react';
 
 export default function Mint() {
 	const [text, setText] = useState('');
@@ -35,7 +36,7 @@ export default function Mint() {
 	return (
 		<div className="font-sans p-10 flex flex-col gap-5 h-screen">
 			<div>
-				<div className="flex justify-center align-center gap-2">
+				<div className="flex justify-center items-center gap-2">
 					<Checkbox
 						id="mintToThirdParty"
 						onCheckedChange={(state) => setMintToThirdParty(!!state)}
@@ -76,7 +77,9 @@ export default function Mint() {
 				onChange={(event) => setText(event.target.value)}
 			/>
 
-			<Button onClick={onClickMint}>Mint</Button>
+			<Button onClick={onClickMint}>
+				Mint <Hammer className="ml-2" />
+			</Button>
 		</div>
 	);
 }
