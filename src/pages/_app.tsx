@@ -8,17 +8,10 @@ const inter = Inter({
 	variable: '--font-sans'
 });
 
-/*
-const serif = Noto_Serif({
-	subsets: ['latin'],
-	variable: '--font-serif'
-});
-*/
-
 export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<main className={`${inter.variable} font-sans`}>
-			<Component {...pageProps} />;
+			<Component {...pageProps} />
 		</main>
 	);
 }

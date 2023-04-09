@@ -1,3 +1,4 @@
+import { Separator } from '@/components/ui/separator';
 import { getTokenById, TokenInfo } from '@/lib/ethers';
 import { retrieveData } from '@/lib/ipfs';
 import { useRouter } from 'next/router';
@@ -28,13 +29,18 @@ const TokenInfoPage = () => {
 	}, [tokenInfo.uri]);
 
 	return (
-		<div>
-			<h1># {tokenInfo.id}</h1>
+		<div className="p-4 flex flex-col align-center items-center justify-center w-screen">
+			<h1 className="flex h-10 items-center space-x-4 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+				<span># {tokenInfo.id}</span>
+				<Separator orientation="vertical" />
+				<span>{tokenInfo.title}</span>
+			</h1>
 
-			<h2>{tokenInfo.title}</h2>
-			<h4>{tokenInfo.description}</h4>
+			<h2 className="mt-10 scroll-m-20 border-b border-b-slate-200 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0 dark:border-b-slate-700">
+				{tokenInfo.description}
+			</h2>
 
-			<text>{text}</text>
+			<text className="text-justify w-full">{text}</text>
 		</div>
 	);
 };

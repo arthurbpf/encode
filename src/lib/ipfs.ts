@@ -20,14 +20,10 @@ export async function retrieveData(hash: string) {
 		return '';
 	}
 
-	const client = create();
+	const response = await fetch(`${ipfsBaseUrl}${hash}`);
+	const data = await response.json();
 
-	let content = '';
-	for await (const chunk of client.cat(hash)) {
-		content += toUtf8String(chunk);
-	}
-
-	return JSON.parse(content);
+	return data.text;
 }
 
 export const ipfsBaseUrl = 'https://ipfs.io/ipfs/';

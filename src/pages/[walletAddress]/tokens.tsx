@@ -21,15 +21,17 @@ const Tokens = () => {
 	}, [walletAddress]);
 
 	return (
-		<div>
-			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+		<div className="w-screen p-4">
+			<h1 className="mb-4 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
 				Wallet Address
 				<br />
 				{walletAddress}
 			</h1>
-			{tokens.map((token, index) => (
-				<TokenCard key={index} token={token} />
-			))}
+			<div className="grid">
+				{tokens.map((token, index) => (
+					<TokenCard key={index} token={token} />
+				))}
+			</div>
 		</div>
 	);
 };
