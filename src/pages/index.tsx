@@ -4,7 +4,7 @@ import { connectWallet, getPrimaryAccountAddress } from '@/lib/ethers';
 import { setUserAddress, useEthersStore } from '@/stores/ethers';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Wallet, Link as LinkIcon } from 'lucide-react';
+import { Wallet, Link as LinkIcon, Search } from 'lucide-react';
 
 export default function Home() {
 	const userAddress = useEthersStore((state) => state.userAddress);
@@ -31,17 +31,26 @@ export default function Home() {
 					Encode
 				</h1>
 
-				{!userAddress ? (
-					<Button onClick={connectWallet}>
-						Conectar carteira <Wallet className="ml-2" />
-					</Button>
-				) : (
-					<Link href="/mint">
+				<div className="flex flex-col items-center justify-center gap-2">
+					{!userAddress ? (
+						<Button onClick={connectWallet}>
+							Conectar carteira <Wallet className="ml-2" />
+						</Button>
+					) : (
+						<Link href="/mint">
+							<Button>
+								Envie seus textos para a blockchain{' '}
+								<LinkIcon className="ml-2" />
+							</Button>
+						</Link>
+					)}
+
+					<Link href="/tokens">
 						<Button>
-							Envie seus textos para a blockchain <LinkIcon className="ml-2" />
+							Veja os tokens criados pela comunidade <Search className="ml-2" />
 						</Button>
 					</Link>
-				)}
+				</div>
 			</main>
 		</>
 	);
