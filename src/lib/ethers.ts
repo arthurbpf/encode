@@ -161,3 +161,27 @@ export async function getTokenById(id: number): Promise<TokenInfo> {
 		return {} as TokenInfo;
 	}
 }
+
+export async function listTokens(): Promise<TokenInfo[]> {
+	const contract = await getEncodeContract({ signed: false });
+
+	try {
+		if (contract) {
+			const tokens = await contract.listTokens();
+
+			return tokens.map((token: any) => ({
+				id: Number(token.id),
+				uri: token.uri,
+				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
+				owner: token.owner,
+				title: token.metadata.title,
+				description: token.metadata.description
+			}));
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+		return [];
+	}
+}
