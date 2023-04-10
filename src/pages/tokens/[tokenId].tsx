@@ -29,8 +29,8 @@ const TokenInfoPage = () => {
 	}, [tokenInfo.uri]);
 
 	return (
-		<div className="p-4 flex flex-col align-center items-center justify-center w-screen">
-			<h1 className="flex h-10 items-center space-x-4 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+		<div className="align-center flex w-screen flex-col items-center justify-center p-4">
+			<h1 className="flex h-10 scroll-m-20 items-center space-x-4 text-4xl font-extrabold tracking-tight lg:text-5xl">
 				<span># {tokenInfo.id}</span>
 				<Separator orientation="vertical" />
 				<span>{tokenInfo.title}</span>
@@ -40,7 +40,7 @@ const TokenInfoPage = () => {
 				{tokenInfo.description}
 			</h2>
 
-			<text className="text-justify w-full">{text}</text>
+			<text className="w-full text-justify">{text}</text>
 		</div>
 	);
 };

@@ -26,7 +26,7 @@ export default function Home() {
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
-			<main className="font-sans p-10 flex flex-col items-center justify-around gap-5 h-screen w-screen">
+			<main className="flex h-screen w-screen flex-col items-center justify-around gap-5 p-10 font-sans">
 				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
 					Encode
 				</h1>

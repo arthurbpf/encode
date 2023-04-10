@@ -34,9 +34,9 @@ export default function Mint() {
 	};
 
 	return (
-		<div className="font-sans p-10 flex flex-col gap-5 h-screen">
+		<div className="flex h-screen flex-col gap-5 p-10 font-sans">
 			<div>
-				<div className="flex justify-center items-center gap-2">
+				<div className="flex items-center justify-center gap-2">
 					<Checkbox
 						id="mintToThirdParty"
 						onCheckedChange={(state) => setMintToThirdParty(!!state)}
