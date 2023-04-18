@@ -38,7 +38,10 @@ export async function isConnected() {
 export async function getPrimaryAccountAddress() {
 	const accounts = await getConnectedAccounts();
 
-	return accounts[0]?.getAddress();
+	const address = (await accounts[0]?.getAddress()) || '';
+
+	setUserAddress(address);
+	return address;
 }
 
 export async function connectWallet() {

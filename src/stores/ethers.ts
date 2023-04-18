@@ -10,8 +10,18 @@ export const useEthersStore = create<EthersStore>((set, get) => ({
 	userAddress: '',
 	setUserAddress: (userAddress) => set({ userAddress }),
 	getTrimmedUserAddress: () => {
-		return get().userAddress.substring(0, 7) + '...';
+		const address = get().userAddress;
+
+		if (!address) return '';
+
+		return (
+			address.substring(0, 5) +
+			'...' +
+			address.substring(address.length - 4, address.length)
+		);
 	}
 }));
 
 export const setUserAddress = useEthersStore.getState().setUserAddress;
+export const getTrimmedUserAddress =
+	useEthersStore.getState().getTrimmedUserAddress;

@@ -34,52 +34,54 @@ export default function Mint() {
 	};
 
 	return (
-		<div className="flex h-screen flex-col gap-5 p-10 font-sans">
-			<div>
-				<div className="flex items-center justify-center gap-2">
-					<Checkbox
-						id="mintToThirdParty"
-						onCheckedChange={(state) => setMintToThirdParty(!!state)}
-						checked={mintToThirdParty}
-					/>
-					<label htmlFor="mintToThirdParty">
-						Deseja enviar o token para uma outra conta?
-					</label>
+		<>
+			<div className="flex h-full flex-grow flex-col gap-5 p-10 font-sans">
+				<div>
+					<div className="flex items-center justify-center gap-2">
+						<Checkbox
+							id="mintToThirdParty"
+							onCheckedChange={(state) => setMintToThirdParty(!!state)}
+							checked={mintToThirdParty}
+						/>
+						<label htmlFor="mintToThirdParty">
+							Deseja enviar o token para uma outra conta?
+						</label>
+					</div>
+
+					{mintToThirdParty && (
+						<Input
+							type="text"
+							placeholder="Endereço da conta"
+							value={thirdPartyAdd}
+							onChange={(event) => setThirdPartyAdd(event.target.value)}
+						/>
+					)}
 				</div>
 
-				{mintToThirdParty && (
+				<div className="flex flex-row gap-2">
 					<Input
-						type="text"
-						placeholder="Endereço da conta"
-						value={thirdPartyAdd}
-						onChange={(event) => setThirdPartyAdd(event.target.value)}
+						placeholder="Título"
+						value={title}
+						onChange={(event) => setTitle(event.target.value)}
 					/>
-				)}
-			</div>
+					<Input
+						placeholder="Descrição"
+						value={description}
+						onChange={(event) => setDescription(event.target.value)}
+					/>
+				</div>
 
-			<div className="flex flex-row gap-2">
-				<Input
-					placeholder="Título"
-					value={title}
-					onChange={(event) => setTitle(event.target.value)}
+				<Textarea
+					className="flex-grow"
+					placeholder="Digite o texto aqui"
+					value={text}
+					onChange={(event) => setText(event.target.value)}
 				/>
-				<Input
-					placeholder="Descrição"
-					value={description}
-					onChange={(event) => setDescription(event.target.value)}
-				/>
+
+				<Button onClick={onClickMint}>
+					Mint <Hammer className="ml-2" />
+				</Button>
 			</div>
-
-			<Textarea
-				className="flex-grow"
-				placeholder="Digite o texto aqui"
-				value={text}
-				onChange={(event) => setText(event.target.value)}
-			/>
-
-			<Button onClick={onClickMint}>
-				Mint <Hammer className="ml-2" />
-			</Button>
-		</div>
+		</>
 	);
 }

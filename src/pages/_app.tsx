@@ -1,17 +1,20 @@
+import Navbar from '@/components/Navbar';
+import { getPrimaryAccountAddress } from '@/lib/ethers';
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
-
-import { Inter, Noto_Serif } from 'next/font/google';
-
-const inter = Inter({
-	subsets: ['latin'],
-	variable: '--font-sans'
-});
+import { useEffect } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
+	useEffect(() => {
+		getPrimaryAccountAddress();
+	}, []);
+
 	return (
-		<main className={`${inter.variable} font-sans`}>
-			<Component {...pageProps} />
-		</main>
+		<div className={`flex min-h-screen flex-col font-sans`}>
+			<Navbar />
+			<main className="flex flex-grow flex-col">
+				<Component {...pageProps} />
+			</main>
+		</div>
 	);
 }
