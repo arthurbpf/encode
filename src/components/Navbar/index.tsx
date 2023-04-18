@@ -9,7 +9,7 @@ const AvatarPill = () => {
 	const isLoggedIn = !!userAddress;
 
 	const avatarInfo = {
-		src: isLoggedIn ? '/user.svg' : 'lock.svg',
+		src: isLoggedIn ? '/user.svg' : '/lock.svg',
 		alt: isLoggedIn ? 'User' : 'Lock'
 	};
 
