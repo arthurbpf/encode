@@ -7,6 +7,9 @@ module.exports = {
 	content: ['./src/**/*.{js,ts,jsx,tsx}'],
 	theme: {
 		extend: {
+			colors: {
+				background: '#FFFFFF'
+			},
 			fontFamily: {
 				sans: ['Inter', ...fontFamily.sans]
 			},
