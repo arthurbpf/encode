@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { getTokenById, TokenInfo } from '@/lib/ethers';
+import { createBuyingRequest, getTokenById, TokenInfo } from '@/lib/ethers';
 import { retrieveData } from '@/lib/ipfs';
 import { useEthersStore } from '@/stores/ethers';
 import { List, Megaphone, ShoppingBag } from 'lucide-react';
@@ -26,6 +26,7 @@ import {
 	SheetTitle,
 	SheetTrigger
 } from '@/components/ui/sheet';
+import { useForm } from 'react-hook-form';
 
 const ListOffersSheet = () => {
 	return (
@@ -38,34 +39,32 @@ const ListOffersSheet = () => {
 			</SheetTrigger>
 			<SheetContent position="right" size="sm">
 				<SheetHeader>
-					<SheetTitle>Edit profile</SheetTitle>
+					<SheetTitle>Ofertas de compra</SheetTitle>
 					<SheetDescription>
-						Make changes to your profile here. Click save when you're done.
+						Veja aqui as ofertas para esse token.
 					</SheetDescription>
 				</SheetHeader>
-				<div className="grid gap-4 py-4">
-					<div className="grid grid-cols-4 items-center gap-4">
-						<Label htmlFor="name" className="text-right">
-							Name
-						</Label>
-						<Input id="name" value="Pedro Duarte" className="col-span-3" />
-					</div>
-					<div className="grid grid-cols-4 items-center gap-4">
-						<Label htmlFor="username" className="text-right">
-							Username
-						</Label>
-						<Input id="username" value="@peduarte" className="col-span-3" />
-					</div>
-				</div>
-				<SheetFooter>
-					<Button type="submit">Save changes</Button>
-				</SheetFooter>
+				<div className="grid gap-4 py-4"></div>
 			</SheetContent>
 		</Sheet>
 	);
 };
 
-const MakeOfferDialog = () => {
+interface MakeOfferDialogProps {
+	tokenId: number;
+}
+
+const MakeOfferDialog = ({ tokenId }: MakeOfferDialogProps) => {
+	interface FormData {
+		amount: number;
+	}
+
+	const { register, handleSubmit } = useForm<FormData>();
+
+	const onSubmit = handleSubmit((data) => {
+		createBuyingRequest({ tokenId, amount: data.amount });
+	});
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -74,24 +73,34 @@ const MakeOfferDialog = () => {
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
-				<DialogHeader>
-					<DialogTitle>Faça uma oferta!</DialogTitle>
-					<DialogDescription>
-						Insira a quantia que estiver disposto a pagar pelos direitos de
-						posse do conteúdo.
-					</DialogDescription>
-				</DialogHeader>
-				<div className="grid gap-4 py-4">
-					<div className="grid grid-cols-4 items-center gap-4">
-						<Label htmlFor="name" className="text-right">
-							Quantia
-						</Label>
-						<Input type="number" id="name" className="col-span-3" />
+				<form onSubmit={onSubmit}>
+					<DialogHeader>
+						<DialogTitle>Faça uma oferta!</DialogTitle>
+						<DialogDescription>
+							Insira a quantia que estiver disposto a pagar pelos direitos de
+							posse do conteúdo.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="grid gap-4 py-4">
+						<div className="grid grid-cols-4 items-center gap-4">
+							<Label htmlFor="name" className="text-right">
+								Quantia
+							</Label>
+							<Input
+								type="number"
+								{...register('amount', {
+									min: 0,
+									required: true,
+									valueAsNumber: true
+								})}
+								className="col-span-3"
+							/>
+						</div>
 					</div>
-				</div>
-				<DialogFooter>
-					<Button type="submit">Fazer oferta</Button>
-				</DialogFooter>
+					<DialogFooter>
+						<Button type="submit">Fazer oferta</Button>
+					</DialogFooter>
+				</form>
 			</DialogContent>
 		</Dialog>
 	);
@@ -164,7 +173,7 @@ const TokenInfoPage = () => {
 
 			<div className="align-center mt-10 flex items-center justify-center gap-2">
 				{tokenInfo.owner !== userAddress ? (
-					<MakeOfferDialog />
+					<MakeOfferDialog tokenId={Number(tokenId)} />
 				) : (
 					<SellTokenDialog />
 				)}

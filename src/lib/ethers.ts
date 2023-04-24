@@ -188,3 +188,26 @@ export async function listTokens(): Promise<TokenInfo[]> {
 		return [];
 	}
 }
+
+interface CreateBuyingRequestParams {
+	amount: number;
+	tokenId: number;
+}
+
+export async function createBuyingRequest({
+	tokenId,
+	amount
+}: CreateBuyingRequestParams) {
+	const contract = await getEncodeContract({ signed: true });
+
+	try {
+		if (contract) {
+			const tx = contract.createBuyingRequest(tokenId, BigInt(amount));
+			await tx;
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
