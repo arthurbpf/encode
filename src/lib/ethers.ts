@@ -5,6 +5,10 @@ import abi from './Encode.json';
 
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
+function cleanArray<T>(array: T[]): T[] {
+	return array.length === 1 && array[0] === 0 ? [] : array;
+}
+
 export function isMetaMaskInstalled() {
 	return window && window.ethereum;
 }
@@ -172,14 +176,16 @@ export async function listTokens(): Promise<TokenInfo[]> {
 		if (contract) {
 			const tokens = await contract.listTokens();
 
-			return tokens.map((token: any) => ({
-				id: Number(token.id),
-				uri: token.uri,
-				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
-				owner: token.owner,
-				title: token.metadata.title,
-				description: token.metadata.description
-			}));
+			return cleanArray(
+				tokens.map((token: any) => ({
+					id: Number(token.id),
+					uri: token.uri,
+					creationDate: new Date(Number(token.metadata.creationDate) * 1000),
+					owner: token.owner,
+					title: token.metadata.title,
+					description: token.metadata.description
+				}))
+			);
 		} else {
 			throw new Error('Contract not found!');
 		}
@@ -209,5 +215,44 @@ export async function createBuyingRequest({
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+export interface BuyingRequest {
+	id: number;
+	buyer: string;
+	offer: number;
+	creationDate: Date;
+	status: number;
+}
+
+interface GetBuyingRequestsParams {
+	tokenId: number;
+}
+
+export async function getBuyingRequests({
+	tokenId
+}: GetBuyingRequestsParams): Promise<BuyingRequest[]> {
+	const contract = await getEncodeContract({ signed: false });
+
+	try {
+		if (contract) {
+			const requests = await contract.getBuyingRequests(tokenId);
+
+			return cleanArray(
+				requests.map((request: any) => ({
+					id: Number(request.id),
+					buyer: request.buyer,
+					offer: Number(request.offer),
+					creationDate: new Date(Number(request.timestamp) * 1000),
+					status: request.status
+				}))
+			);
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+		return [];
 	}
 }
