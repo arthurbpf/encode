@@ -1,6 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { createBuyingRequest, getTokenById, TokenInfo } from '@/lib/ethers';
+import {
+	BuyingRequest,
+	createBuyingRequest,
+	getBuyingRequests,
+	getTokenById,
+	TokenInfo
+} from '@/lib/ethers';
 import { retrieveData } from '@/lib/ipfs';
 import { useEthersStore } from '@/stores/ethers';
 import { List, Megaphone, ShoppingBag } from 'lucide-react';
@@ -21,14 +27,30 @@ import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
-	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger
 } from '@/components/ui/sheet';
 import { useForm } from 'react-hook-form';
 
-const ListOffersSheet = () => {
+interface ListOffersSheetProps {
+	tokenId: number;
+}
+
+const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
+	const [buyingRequests, setBuyingRequests] = useState<BuyingRequest[]>([]);
+
+	const getRequests = async (tokenId: number) => {
+		if (isNaN(tokenId)) return;
+
+		const requests = await getBuyingRequests({ tokenId });
+		setBuyingRequests(requests);
+	};
+
+	useEffect(() => {
+		getRequests(tokenId);
+	}, [tokenId]);
+
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
@@ -44,7 +66,11 @@ const ListOffersSheet = () => {
 						Veja aqui as ofertas para esse token.
 					</SheetDescription>
 				</SheetHeader>
-				<div className="grid gap-4 py-4"></div>
+				<div className="grid gap-4 py-4">
+					{buyingRequests.map((buyingRequest) => (
+						<div>{buyingRequest.id}</div>
+					))}
+				</div>
 			</SheetContent>
 		</Sheet>
 	);
@@ -146,11 +172,15 @@ const TokenInfoPage = () => {
 	const [text, setText] = useState('');
 
 	const getTokenInfo = async () => {
+		if (!tokenId) return;
+
 		const tokenInfo = await getTokenById(Number(tokenId));
 		setTokenInfo(tokenInfo);
 	};
 
 	const getText = async () => {
+		if (!tokenInfo.uri) return;
+
 		const text = await retrieveData(tokenInfo.uri);
 		setText(text);
 	};
@@ -177,14 +207,14 @@ const TokenInfoPage = () => {
 				) : (
 					<SellTokenDialog />
 				)}
-				<ListOffersSheet />
+				<ListOffersSheet tokenId={Number(tokenId)} />
 			</div>
 
 			<h2 className="mt-10 scroll-m-20 border-b border-b-slate-200 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0 dark:border-b-slate-700">
 				{tokenInfo.description}
 			</h2>
 
-			<text className="w-full text-justify">{text}</text>
+			<article className="w-full text-justify">{text}</article>
 		</div>
 	);
 };
