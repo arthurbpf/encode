@@ -5,11 +5,12 @@ import {
 	createBuyingRequest,
 	getBuyingRequests,
 	getTokenById,
+	shortenAddress,
 	TokenInfo
 } from '@/lib/ethers';
 import { retrieveData } from '@/lib/ipfs';
 import { useEthersStore } from '@/stores/ethers';
-import { List, Megaphone, ShoppingBag } from 'lucide-react';
+import { Clock, List, Megaphone, ShoppingBag, User } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {
@@ -32,6 +33,9 @@ import {
 	SheetTrigger
 } from '@/components/ui/sheet';
 import { useForm } from 'react-hook-form';
+import { formatDistance } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { FaEthereum } from 'react-icons/fa';
 
 interface ListOffersSheetProps {
 	tokenId: number;
@@ -67,8 +71,28 @@ const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
 					</SheetDescription>
 				</SheetHeader>
 				<div className="grid gap-4 py-4">
-					{buyingRequests.map((buyingRequest) => (
-						<div>{buyingRequest.id}</div>
+					{buyingRequests.map((buyingRequest, index) => (
+						<>
+							{index > 0 && <Separator />}
+							<div className="flex flex-col">
+								<div># {buyingRequest.id}</div>
+								<div className="align-center flex items-center justify-center">
+									<User />
+									{shortenAddress(buyingRequest.buyer)}
+								</div>
+								<div className="align-center flex items-center justify-center">
+									<FaEthereum />
+									{buyingRequest.offer}
+								</div>
+								<div className="align-center flex items-center justify-center">
+									<Clock className="h-4" />
+									{formatDistance(buyingRequest.creationDate, new Date(), {
+										locale: ptBR
+									})}
+								</div>
+								<Button>Aceitar oferta</Button>
+							</div>
+						</>
 					))}
 				</div>
 			</SheetContent>
