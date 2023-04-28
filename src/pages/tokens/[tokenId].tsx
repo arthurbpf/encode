@@ -49,21 +49,7 @@ const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
 		if (isNaN(tokenId)) return;
 
 		const requests = await getBuyingRequests({ tokenId });
-		setBuyingRequests([
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests,
-			...requests
-		]);
+		setBuyingRequests(requests);
 	};
 
 	useEffect(() => {
