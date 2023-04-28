@@ -36,6 +36,7 @@ import { useForm } from 'react-hook-form';
 import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { FaEthereum } from 'react-icons/fa';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface ListOffersSheetProps {
 	tokenId: number;
@@ -48,7 +49,21 @@ const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
 		if (isNaN(tokenId)) return;
 
 		const requests = await getBuyingRequests({ tokenId });
-		setBuyingRequests(requests);
+		setBuyingRequests([
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests,
+			...requests
+		]);
 	};
 
 	useEffect(() => {
@@ -63,38 +78,41 @@ const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
 					<List />
 				</Button>
 			</SheetTrigger>
-			<SheetContent position="right" size="sm">
+			<SheetContent position="right" size="sm" className="flex flex-col">
 				<SheetHeader>
 					<SheetTitle>Ofertas de compra</SheetTitle>
 					<SheetDescription>
 						Veja aqui as ofertas para esse token.
 					</SheetDescription>
 				</SheetHeader>
-				<div className="grid gap-4 py-4">
-					{buyingRequests.map((buyingRequest, index) => (
-						<>
-							{index > 0 && <Separator />}
-							<div className="flex flex-col">
-								<div># {buyingRequest.id}</div>
-								<div className="align-center flex items-center justify-center">
-									<User />
-									{shortenAddress(buyingRequest.buyer)}
+				<ScrollArea>
+					<div className="grid p-6">
+						{buyingRequests.map((buyingRequest, index) => (
+							<div key={index}>
+								{index > 0 && <Separator className="my-4" />}
+								<div className="flex flex-col">
+									<div># {buyingRequest.id}</div>
+									<div className="align-center flex items-center justify-center">
+										<User />
+										{shortenAddress(buyingRequest.buyer)}
+									</div>
+									<div className="align-center flex items-center justify-center">
+										<FaEthereum />
+										{buyingRequest.offer}
+									</div>
+									<div className="align-center flex items-center justify-center">
+										<Clock className="h-4" />
+										{formatDistance(buyingRequest.creationDate, new Date(), {
+											locale: ptBR
+										})}
+									</div>
+									<Button>Aceitar oferta</Button>
 								</div>
-								<div className="align-center flex items-center justify-center">
-									<FaEthereum />
-									{buyingRequest.offer}
-								</div>
-								<div className="align-center flex items-center justify-center">
-									<Clock className="h-4" />
-									{formatDistance(buyingRequest.creationDate, new Date(), {
-										locale: ptBR
-									})}
-								</div>
-								<Button>Aceitar oferta</Button>
 							</div>
-						</>
-					))}
-				</div>
+						))}
+					</div>
+					<ScrollBar />
+				</ScrollArea>
 			</SheetContent>
 		</Sheet>
 	);
