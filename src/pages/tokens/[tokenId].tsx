@@ -184,10 +184,9 @@ const SellTokenDialog = () => {
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
-					<DialogTitle>Faça uma oferta!</DialogTitle>
+					<DialogTitle>Faça um anúncio!</DialogTitle>
 					<DialogDescription>
-						Insira a quantia que estiver disposto a pagar pelos direitos de
-						posse do conteúdo.
+						Insira a quantidade pela qual está disposto a vender este item.
 					</DialogDescription>
 				</DialogHeader>
 				<div className="grid gap-4 py-4">
