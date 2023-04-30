@@ -257,6 +257,29 @@ export async function getBuyingRequests({
 	}
 }
 
+interface AcceptBuyingRequestParams {
+	tokenId: number;
+	requestId: number;
+}
+
+export async function acceptBuyingRequest({
+	tokenId,
+	requestId
+}: AcceptBuyingRequestParams) {
+	const contract = await getEncodeContract({ signed: true });
+
+	try {
+		if (contract) {
+			const tx = contract.acceptBuyingRequest(tokenId, requestId);
+			await tx;
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 export function shortenAddress(address: string) {
 	return (
 		address.substring(0, 5) +

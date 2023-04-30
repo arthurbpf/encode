@@ -12,7 +12,7 @@ import { retrieveData } from '@/lib/ipfs';
 import { useEthersStore } from '@/stores/ethers';
 import { Clock, List, Megaphone, ShoppingBag, User } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import {
 	Dialog,
 	DialogContent,
@@ -38,12 +38,16 @@ import { ptBR } from 'date-fns/locale';
 import { FaEthereum } from 'react-icons/fa';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
+const TokenContext = createContext<TokenInfo>({} as TokenInfo);
+
 interface ListOffersSheetProps {
 	tokenId: number;
 }
 
-const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
+const ListOffersSheet = () => {
+	const token = useContext(TokenContext);
 	const [buyingRequests, setBuyingRequests] = useState<BuyingRequest[]>([]);
+	const { userAddress } = useEthersStore();
 
 	const getRequests = async (tokenId: number) => {
 		if (isNaN(tokenId)) return;
@@ -53,8 +57,8 @@ const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
 	};
 
 	useEffect(() => {
-		getRequests(tokenId);
-	}, [tokenId]);
+		getRequests(token.id);
+	}, [token.id]);
 
 	return (
 		<Sheet>
@@ -92,7 +96,9 @@ const ListOffersSheet = ({ tokenId }: ListOffersSheetProps) => {
 											locale: ptBR
 										})}
 									</div>
-									<Button>Aceitar oferta</Button>
+									{token.owner === userAddress && (
+										<Button>Aceitar oferta</Button>
+									)}
 								</div>
 							</div>
 						))}
@@ -229,12 +235,14 @@ const TokenInfoPage = () => {
 			</h1>
 
 			<div className="align-center mt-10 flex items-center justify-center gap-2">
-				{tokenInfo.owner !== userAddress ? (
-					<MakeOfferDialog tokenId={Number(tokenId)} />
-				) : (
-					<SellTokenDialog />
-				)}
-				<ListOffersSheet tokenId={Number(tokenId)} />
+				<TokenContext.Provider value={tokenInfo}>
+					{tokenInfo.owner !== userAddress ? (
+						<MakeOfferDialog tokenId={Number(tokenId)} />
+					) : (
+						<SellTokenDialog />
+					)}
+					<ListOffersSheet tokenId={Number(tokenId)} />
+				</TokenContext.Provider>
 			</div>
 
 			<h2 className="mt-10 scroll-m-20 border-b border-b-slate-200 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0 dark:border-b-slate-700">
