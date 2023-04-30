@@ -234,6 +234,8 @@ const TokenInfoPage = () => {
 				<span>{tokenInfo.title}</span>
 			</h1>
 
+			<h3>Owned by: {shortenAddress(tokenInfo.owner || '')}</h3>
+
 			<div className="align-center mt-10 flex items-center justify-center gap-2">
 				<TokenContext.Provider value={tokenInfo}>
 					{tokenInfo.owner !== userAddress ? (
@@ -241,7 +243,7 @@ const TokenInfoPage = () => {
 					) : (
 						<SellTokenDialog />
 					)}
-					<ListOffersSheet tokenId={Number(tokenId)} />
+					<ListOffersSheet />
 				</TokenContext.Provider>
 			</div>
 
