@@ -1,5 +1,5 @@
 import { setUserAddress } from '@/stores/ethers';
-import { ethers } from 'ethers';
+import { ethers, parseEther } from 'ethers';
 
 import abi from './Encode.json';
 
@@ -208,7 +208,9 @@ export async function createBuyingRequest({
 
 	try {
 		if (contract) {
-			const tx = contract.createBuyingRequest(tokenId, BigInt(amount));
+			const tx = contract.createBuyingRequest(tokenId, {
+				value: parseEther(amount.toString())
+			});
 			await tx;
 		} else {
 			throw new Error('Contract not found!');

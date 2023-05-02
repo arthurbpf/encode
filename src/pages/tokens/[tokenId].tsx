@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
+	acceptBuyingRequest,
 	BuyingRequest,
 	createBuyingRequest,
 	getBuyingRequests,
@@ -56,6 +57,13 @@ const ListOffersSheet = () => {
 		setBuyingRequests(requests);
 	};
 
+	const accept = (requestId: number) => {
+		acceptBuyingRequest({
+			requestId,
+			tokenId: token.id
+		});
+	};
+
 	useEffect(() => {
 		getRequests(token.id);
 	}, [token.id]);
@@ -97,7 +105,9 @@ const ListOffersSheet = () => {
 										})}
 									</div>
 									{token.owner === userAddress && (
-										<Button>Aceitar oferta</Button>
+										<Button onClick={() => accept(buyingRequest.id)}>
+											Aceitar oferta
+										</Button>
 									)}
 								</div>
 							</div>
@@ -148,6 +158,7 @@ const MakeOfferDialog = ({ tokenId }: MakeOfferDialogProps) => {
 							</Label>
 							<Input
 								type="number"
+								step="any"
 								{...register('amount', {
 									min: 0,
 									required: true,
