@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Hammer } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function Mint() {
 	const [text, setText] = useState('');
@@ -13,12 +14,13 @@ export default function Mint() {
 	const [thirdPartyAdd, setThirdPartyAdd] = useState('');
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
+	const { toast } = useToast();
 
 	const onClickMint = async () => {
 		try {
 			const ipfs = await sendData(text);
 
-			mintToken({
+			await mintToken({
 				address: mintToThirdParty
 					? thirdPartyAdd
 					: await getPrimaryAccountAddress(),
@@ -27,9 +29,17 @@ export default function Mint() {
 				description: description
 			});
 
-			//TODO: Add a success message!
+			toast({
+				title: 'Token criado com sucesso',
+				description:
+					'O token foi criado com sucesso e já está disponível na sua carteira.'
+			});
 		} catch (error) {
-			console.error(error);
+			toast({
+				variant: 'destructive',
+				title: 'Erro ao criar o token',
+				description: 'Não foi possível criar o token, tente novamente.'
+			});
 		}
 	};
 
