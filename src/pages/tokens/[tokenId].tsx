@@ -38,6 +38,7 @@ import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { FaEthereum } from 'react-icons/fa';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { formatEther } from 'ethers';
 
 const TokenContext = createContext<TokenInfo>({} as TokenInfo);
 
@@ -96,7 +97,7 @@ const ListOffersSheet = () => {
 									</div>
 									<div className="align-center flex items-center justify-center">
 										<FaEthereum />
-										{buyingRequest.offer}
+										{formatEther(buyingRequest.offer)}
 									</div>
 									<div className="align-center flex items-center justify-center">
 										<Clock className="h-4" />
@@ -107,6 +108,14 @@ const ListOffersSheet = () => {
 									{token.owner === userAddress && (
 										<Button onClick={() => accept(buyingRequest.id)}>
 											Aceitar oferta
+										</Button>
+									)}
+									{buyingRequest.buyer === userAddress && (
+										<Button
+											variant="destructive"
+											onClick={() => accept(buyingRequest.id)}
+										>
+											Cancelar oferta
 										</Button>
 									)}
 								</div>
@@ -238,16 +247,18 @@ const TokenInfoPage = () => {
 	}, [tokenInfo.uri]);
 
 	return (
-		<div className="align-center flex w-screen flex-col items-center justify-center p-4">
+		<div className="align-center flex w-screen flex-col items-center justify-center gap-10 p-6">
 			<h1 className="flex h-10 scroll-m-20 items-center space-x-4 text-4xl font-extrabold tracking-tight lg:text-5xl">
 				<span># {tokenInfo.id}</span>
 				<Separator orientation="vertical" />
 				<span>{tokenInfo.title}</span>
 			</h1>
 
-			<h3>Owned by: {shortenAddress(tokenInfo.owner || '')}</h3>
+			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+				Owned by: {shortenAddress(tokenInfo.owner || '')}
+			</h3>
 
-			<div className="align-center mt-10 flex items-center justify-center gap-2">
+			<div className="align-center flex items-center justify-center gap-2">
 				<TokenContext.Provider value={tokenInfo}>
 					{tokenInfo.owner !== userAddress ? (
 						<MakeOfferDialog tokenId={Number(tokenId)} />
@@ -258,11 +269,13 @@ const TokenInfoPage = () => {
 				</TokenContext.Provider>
 			</div>
 
-			<h2 className="mt-10 scroll-m-20 border-b border-b-slate-200 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0 dark:border-b-slate-700">
-				{tokenInfo.description}
-			</h2>
+			<div>
+				<h2 className="mt-10 scroll-m-20 border-b border-b-slate-200 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0 dark:border-b-slate-700">
+					{tokenInfo.description}
+				</h2>
 
-			<article className="w-full text-justify">{text}</article>
+				<article className="w-full text-justify">{text}</article>
+			</div>
 		</div>
 	);
 };
