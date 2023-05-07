@@ -4,6 +4,7 @@ import {
 	acceptBuyingRequest,
 	BuyingRequest,
 	createBuyingRequest,
+	createSellingListing,
 	getBuyingRequests,
 	getTokenById,
 	shortenAddress,
@@ -129,11 +130,8 @@ const ListOffersSheet = () => {
 	);
 };
 
-interface MakeOfferDialogProps {
-	tokenId: number;
-}
-
-const MakeOfferDialog = ({ tokenId }: MakeOfferDialogProps) => {
+const MakeOfferDialog = () => {
+	const token = useContext(TokenContext);
 	interface FormData {
 		amount: number;
 	}
@@ -141,7 +139,7 @@ const MakeOfferDialog = ({ tokenId }: MakeOfferDialogProps) => {
 	const { register, handleSubmit } = useForm<FormData>();
 
 	const onSubmit = handleSubmit((data) => {
-		createBuyingRequest({ tokenId, amount: data.amount });
+		createBuyingRequest({ tokenId: token.id, amount: data.amount });
 	});
 
 	return (
@@ -187,31 +185,57 @@ const MakeOfferDialog = ({ tokenId }: MakeOfferDialogProps) => {
 };
 
 const SellTokenDialog = () => {
+	const token = useContext(TokenContext);
+	const [dialogOpen, setDialogOpen] = useState(false);
+
+	interface FormData {
+		amount: number;
+	}
+
+	const { register, handleSubmit } = useForm<FormData>();
+
+	const onSubmit = handleSubmit(async (data) => {
+		await createSellingListing({ tokenId: token.id, amount: data.amount });
+		setDialogOpen(false);
+	});
+
 	return (
-		<Dialog>
+		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 			<DialogTrigger asChild>
 				<Button className="flex gap-2">
-					Criar anúncio de venda <Megaphone />
+					Fazer um anúncio <Megaphone />
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
-				<DialogHeader>
-					<DialogTitle>Faça um anúncio!</DialogTitle>
-					<DialogDescription>
-						Insira a quantidade pela qual está disposto a vender este item.
-					</DialogDescription>
-				</DialogHeader>
-				<div className="grid gap-4 py-4">
-					<div className="grid grid-cols-4 items-center gap-4">
-						<Label htmlFor="name" className="text-right">
-							Quantia
-						</Label>
-						<Input type="number" id="name" className="col-span-3" />
+				<form onSubmit={onSubmit}>
+					<DialogHeader>
+						<DialogTitle>Faça uma oferta!</DialogTitle>
+						<DialogDescription>
+							Insira a quantia pela qual está disposto a vender os direitos
+							sobre este texto
+						</DialogDescription>
+					</DialogHeader>
+					<div className="grid gap-4 py-4">
+						<div className="grid grid-cols-4 items-center gap-4">
+							<Label htmlFor="name" className="text-right">
+								Quantia
+							</Label>
+							<Input
+								type="number"
+								step="any"
+								{...register('amount', {
+									min: 0,
+									required: true,
+									valueAsNumber: true
+								})}
+								className="col-span-3"
+							/>
+						</div>
 					</div>
-				</div>
-				<DialogFooter>
-					<Button type="submit">Fazer oferta</Button>
-				</DialogFooter>
+					<DialogFooter>
+						<Button type="submit">Anunciar</Button>
+					</DialogFooter>
+				</form>
 			</DialogContent>
 		</Dialog>
 	);

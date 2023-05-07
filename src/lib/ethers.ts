@@ -281,6 +281,32 @@ export async function acceptBuyingRequest({
 		console.error(error);
 	}
 }
+interface CreateSellingListingParams {
+	tokenId: number;
+	amount: number;
+}
+
+export async function createSellingListing({
+	tokenId,
+	amount
+}: CreateSellingListingParams) {
+	debugger;
+	const contract = await getEncodeContract({ signed: true });
+
+	try {
+		if (contract) {
+			const tx = contract.createSellingListing(
+				tokenId,
+				parseEther(amount.toString())
+			);
+			await tx;
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
 
 export function shortenAddress(address: string) {
 	return (

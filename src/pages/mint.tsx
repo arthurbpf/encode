@@ -32,7 +32,7 @@ export default function Mint() {
 			toast({
 				title: 'Token criado com sucesso',
 				description:
-					'O token foi criado com sucesso e já está disponível na sua carteira.'
+					'Solicitação enviada com sucesso, aguarde a confirmação da transação!'
 			});
 		} catch (error) {
 			toast({
