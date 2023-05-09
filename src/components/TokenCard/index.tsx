@@ -1,5 +1,5 @@
 import { TokenInfo } from '@/lib/ethers';
-import { Clock } from 'lucide-react';
+import { Clock, ShoppingBag } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Link from 'next/link';
@@ -11,19 +11,46 @@ import {
 	CardHeader,
 	CardTitle
 } from '@/components/ui/card';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger
+} from '../ui/tooltip';
 
 interface TokenCardProps {
 	token: TokenInfo;
 	onTokenClick?: Function;
 }
 
+const BuyNowBadge = () => {
+	return (
+		<div className="rounded-md bg-green-500 p-1 text-white">
+			<TooltipProvider>
+				<Tooltip>
+					<TooltipTrigger>
+						<ShoppingBag />
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Token disponível para compra imediata</p>
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
+		</div>
+	);
+};
+
 const TokenCard = ({ token }: TokenCardProps) => {
 	return (
 		<Link href={`/tokens/${token.id}`}>
 			<Card>
 				<CardHeader>
-					<CardTitle>
-						# {token.id} - {token.title}
+					<CardTitle className="flex justify-between">
+						<div>
+							# {token.id} - {token.title}
+						</div>
+
+						{!!token.sellingListing?.price && <BuyNowBadge />}
 					</CardTitle>
 					<CardDescription>{token.description}</CardDescription>
 				</CardHeader>

@@ -3,6 +3,8 @@ import { Separator } from '@/components/ui/separator';
 import {
 	acceptBuyingRequest,
 	BuyingRequest,
+	cancelBuyingRequest,
+	cancelSellingListing,
 	createBuyingRequest,
 	createSellingListing,
 	getBuyingRequests,
@@ -12,7 +14,15 @@ import {
 } from '@/lib/ethers';
 import { retrieveData } from '@/lib/ipfs';
 import { useEthersStore } from '@/stores/ethers';
-import { Clock, List, Megaphone, ShoppingBag, User } from 'lucide-react';
+import {
+	Clock,
+	List,
+	Megaphone,
+	ShoppingBag,
+	ShoppingCart,
+	Trash,
+	User
+} from 'lucide-react';
 import { useRouter } from 'next/router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import {
@@ -40,12 +50,9 @@ import { ptBR } from 'date-fns/locale';
 import { FaEthereum } from 'react-icons/fa';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { formatEther } from 'ethers';
+import { toast } from '@/components/ui/use-toast';
 
 const TokenContext = createContext<TokenInfo>({} as TokenInfo);
-
-interface ListOffersSheetProps {
-	tokenId: number;
-}
 
 const ListOffersSheet = () => {
 	const token = useContext(TokenContext);
@@ -61,6 +68,13 @@ const ListOffersSheet = () => {
 
 	const accept = (requestId: number) => {
 		acceptBuyingRequest({
+			requestId,
+			tokenId: token.id
+		});
+	};
+
+	const cancel = (requestId: number) => {
+		cancelBuyingRequest({
 			requestId,
 			tokenId: token.id
 		});
@@ -114,7 +128,7 @@ const ListOffersSheet = () => {
 									{buyingRequest.buyer === userAddress && (
 										<Button
 											variant="destructive"
-											onClick={() => accept(buyingRequest.id)}
+											onClick={() => cancel(buyingRequest.id)}
 										>
 											Cancelar oferta
 										</Button>
@@ -195,7 +209,20 @@ const SellTokenDialog = () => {
 	const { register, handleSubmit } = useForm<FormData>();
 
 	const onSubmit = handleSubmit(async (data) => {
-		await createSellingListing({ tokenId: token.id, amount: data.amount });
+		try {
+			await createSellingListing({ tokenId: token.id, amount: data.amount });
+			toast({
+				title: 'Anúncio enviado com sucesso!',
+				description:
+					'Anúncio enviado com sucesso, aguarde a confirmação da transação!'
+			});
+		} catch (error) {
+			toast({
+				title: 'Erro ao enviar anúncio!',
+				description: 'Houve um erro ao realizar o envio da transação!',
+				variant: 'destructive'
+			});
+		}
 		setDialogOpen(false);
 	});
 
@@ -209,7 +236,7 @@ const SellTokenDialog = () => {
 			<DialogContent className="sm:max-w-[425px]">
 				<form onSubmit={onSubmit}>
 					<DialogHeader>
-						<DialogTitle>Faça uma oferta!</DialogTitle>
+						<DialogTitle>Faça um anúncio!</DialogTitle>
 						<DialogDescription>
 							Insira a quantia pela qual está disposto a vender os direitos
 							sobre este texto
@@ -241,6 +268,99 @@ const SellTokenDialog = () => {
 	);
 };
 
+const BuyNowDialog = () => {
+	const token = useContext(TokenContext);
+	const [dialogOpen, setDialogOpen] = useState(false);
+
+	const onClickBuy = () => {
+		setDialogOpen(false);
+	};
+
+	if (!token.sellingListing) {
+		return <></>;
+	}
+
+	return (
+		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+			<DialogTrigger asChild>
+				<Button className="flex gap-2" variant="approval">
+					Comprar
+					<ShoppingCart />
+				</Button>
+			</DialogTrigger>
+			<DialogContent className="sm:max-w-[425px]">
+				<DialogHeader>
+					<DialogTitle>Comprar o token agora!</DialogTitle>
+					<DialogDescription>
+						O proprietário deste token está disposto a vende-lo imediatamente
+						por:
+					</DialogDescription>
+				</DialogHeader>
+				<div className="align-center flex w-full scroll-m-20 items-center justify-center text-2xl font-semibold tracking-tight">
+					<FaEthereum /> {formatEther(token.sellingListing?.price)}
+				</div>
+				<DialogFooter>
+					<Button variant="approval" onClick={onClickBuy}>
+						Comprar
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+};
+
+const DeleteSellingListDialog = () => {
+	const token = useContext(TokenContext);
+	const [dialogOpen, setDialogOpen] = useState(false);
+
+	const onClickDelete = () => {
+		cancelSellingListing({ tokenId: token.id });
+		setDialogOpen(false);
+	};
+
+	const onClickCancel = () => {
+		setDialogOpen(false);
+	};
+
+	if (!token.sellingListing.price) {
+		return <></>;
+	}
+
+	return (
+		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+			<DialogTrigger asChild>
+				<Button className="flex gap-2" variant="destructive">
+					Excluir anúncio de venda
+					<Trash />
+				</Button>
+			</DialogTrigger>
+			<DialogContent className="sm:max-w-[425px]">
+				<DialogHeader>
+					<DialogTitle>Deseja excluir o anúncio?</DialogTitle>
+					<DialogDescription>
+						Este token está disponível para venda pela quantia de:
+					</DialogDescription>
+				</DialogHeader>
+				<div className="align-center flex w-full scroll-m-20 items-center justify-center text-2xl font-semibold tracking-tight">
+					<FaEthereum /> {formatEther(token.sellingListing.price)}
+				</div>
+				<DialogFooter>
+					<Button
+						className="flex gap-2"
+						variant="destructive"
+						onClick={onClickDelete}
+					>
+						Excluir <Trash />
+					</Button>
+					<Button variant="subtle" onClick={onClickCancel}>
+						Cancelar
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+};
+
 const TokenInfoPage = () => {
 	const { userAddress } = useEthersStore();
 	const router = useRouter();
@@ -249,6 +369,13 @@ const TokenInfoPage = () => {
 	const [text, setText] = useState('');
 
 	const getTokenInfo = async () => {
+		if (!tokenId) return;
+
+		const tokenInfo = await getTokenById(Number(tokenId));
+		setTokenInfo(tokenInfo);
+	};
+
+	const getSellingListing = async () => {
 		if (!tokenId) return;
 
 		const tokenInfo = await getTokenById(Number(tokenId));
@@ -264,6 +391,7 @@ const TokenInfoPage = () => {
 
 	useEffect(() => {
 		getTokenInfo();
+		getSellingListing();
 	}, [tokenId]);
 
 	useEffect(() => {
@@ -285,9 +413,15 @@ const TokenInfoPage = () => {
 			<div className="align-center flex items-center justify-center gap-2">
 				<TokenContext.Provider value={tokenInfo}>
 					{tokenInfo.owner !== userAddress ? (
-						<MakeOfferDialog tokenId={Number(tokenId)} />
+						<>
+							<BuyNowDialog />
+							<MakeOfferDialog />
+						</>
 					) : (
-						<SellTokenDialog />
+						<>
+							<DeleteSellingListDialog />
+							<SellTokenDialog />
+						</>
 					)}
 					<ListOffersSheet />
 				</TokenContext.Provider>

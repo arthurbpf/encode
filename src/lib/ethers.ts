@@ -97,15 +97,11 @@ export async function mintToken({
 }: mintTokenParams) {
 	const contract = await getEncodeContract({ signed: true });
 
-	try {
-		if (contract) {
-			const tx = contract.safeMint(address, uri, title, description);
-			await tx;
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
+	if (contract) {
+		const tx = contract.safeMint(address, uri, title, description);
+		await tx;
+	} else {
+		throw new Error('Contract not found!');
 	}
 }
 
@@ -116,6 +112,10 @@ export interface TokenInfo {
 	owner?: string;
 	description: string;
 	creationDate: Date;
+	sellingListing: {
+		price: number;
+		creationDate: Date;
+	};
 }
 
 export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
@@ -132,7 +132,13 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 				uri: token.uri,
 				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
 				title: token.metadata.title,
-				description: token.metadata.description
+				description: token.metadata.description,
+				sellingListing: {
+					price: Number(token.sellingListing.price),
+					creationDate: new Date(
+						Number(token.sellingListing.creationDate) * 1000
+					)
+				}
 			}));
 		} else {
 			throw new Error('Contract not found!');
@@ -158,7 +164,13 @@ export async function getTokenById(id: number): Promise<TokenInfo> {
 				creationDate: new Date(Number(token.metadata.creationDate) * 1000),
 				owner: token.owner,
 				title: token.metadata.title,
-				description: token.metadata.description
+				description: token.metadata.description,
+				sellingListing: {
+					price: Number(token.sellingListing.price),
+					creationDate: new Date(
+						Number(token.sellingListing.creationDate) * 1000
+					)
+				}
 			};
 		} else {
 			throw new Error('Contract not found!');
@@ -183,7 +195,13 @@ export async function listTokens(): Promise<TokenInfo[]> {
 					creationDate: new Date(Number(token.metadata.creationDate) * 1000),
 					owner: token.owner,
 					title: token.metadata.title,
-					description: token.metadata.description
+					description: token.metadata.description,
+					sellingListing: {
+						price: Number(token.sellingListing.price),
+						creationDate: new Date(
+							Number(token.sellingListing.creationDate) * 1000
+						)
+					}
 				}))
 			);
 		} else {
@@ -281,6 +299,30 @@ export async function acceptBuyingRequest({
 		console.error(error);
 	}
 }
+
+interface CancelBuyingRequestParams {
+	tokenId: number;
+	requestId: number;
+}
+
+export async function cancelBuyingRequest({
+	tokenId,
+	requestId
+}: CancelBuyingRequestParams) {
+	const contract = await getEncodeContract({ signed: true });
+
+	try {
+		if (contract) {
+			const tx = contract.cancelBuyingRequest(tokenId, requestId);
+			await tx;
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 interface CreateSellingListingParams {
 	tokenId: number;
 	amount: number;
@@ -290,7 +332,6 @@ export async function createSellingListing({
 	tokenId,
 	amount
 }: CreateSellingListingParams) {
-	debugger;
 	const contract = await getEncodeContract({ signed: true });
 
 	try {
@@ -305,6 +346,56 @@ export async function createSellingListing({
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+interface CancelSellingListingParams {
+	tokenId: number;
+}
+
+export async function cancelSellingListing({
+	tokenId
+}: CancelSellingListingParams) {
+	const contract = await getEncodeContract({ signed: true });
+
+	try {
+		if (contract) {
+			const tx = contract.cancelSellingListing(tokenId);
+			await tx;
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export interface SellingListing {
+	price: number;
+	creationDate: Date;
+}
+
+interface GetSellingListingParams {
+	tokenId: number;
+}
+
+export async function getSellingListing({
+	tokenId
+}: GetSellingListingParams): Promise<SellingListing> {
+	const contract = await getEncodeContract({ signed: false });
+
+	try {
+		if (contract) {
+			const listing = await contract.getSellingListing(tokenId);
+			return {
+				price: Number(listing.price),
+				creationDate: new Date(Number(listing.timestamp) * 1000)
+			};
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		return {} as SellingListing;
 	}
 }
 
