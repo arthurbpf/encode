@@ -59,8 +59,7 @@ export async function connectWallet() {
 
 		const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 
-		console.log('Connected', accounts[0]);
-		setUserAddress(accounts[0]);
+		setUserAddress(await getPrimaryAccountAddress());
 	} catch (error) {
 		console.error(error);
 	}
@@ -223,18 +222,13 @@ export async function createBuyingRequest({
 	amount
 }: CreateBuyingRequestParams) {
 	const contract = await getEncodeContract({ signed: true });
-
-	try {
-		if (contract) {
-			const tx = contract.createBuyingRequest(tokenId, {
-				value: parseEther(amount.toString())
-			});
-			await tx;
-		} else {
-			throw new Error('Contract not found!');
-		}
-	} catch (error) {
-		console.error(error);
+	if (contract) {
+		const tx = contract.createBuyingRequest(tokenId, {
+			value: parseEther(amount.toString())
+		});
+		await tx;
+	} else {
+		throw new Error('Contract not found!');
 	}
 }
 

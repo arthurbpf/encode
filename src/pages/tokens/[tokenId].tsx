@@ -49,7 +49,12 @@ import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { FaEthereum } from 'react-icons/fa';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { formatEther } from 'ethers';
+import {
+	CallExceptionError,
+	formatEther,
+	isCallException,
+	isError
+} from 'ethers';
 import { toast } from '@/components/ui/use-toast';
 
 const TokenContext = createContext<TokenInfo>({} as TokenInfo);
@@ -152,8 +157,26 @@ const MakeOfferDialog = () => {
 
 	const { register, handleSubmit } = useForm<FormData>();
 
-	const onSubmit = handleSubmit((data) => {
-		createBuyingRequest({ tokenId: token.id, amount: data.amount });
+	const onSubmit = handleSubmit(async (data) => {
+		try {
+			await createBuyingRequest({ tokenId: token.id, amount: data.amount });
+			toast({
+				title: 'Oferta enviada com sucesso!',
+				description: 'Aguarde a confirmação da transação!'
+			});
+		} catch (error) {
+			let msg = 'Erro não identificado.';
+
+			if (isCallException(error)) {
+				msg = (error as CallExceptionError).reason || msg;
+			}
+
+			toast({
+				title: 'Erro ao enviar oferta!',
+				description: msg,
+				variant: 'destructive'
+			});
+		}
 	});
 
 	return (
@@ -213,8 +236,7 @@ const SellTokenDialog = () => {
 			await createSellingListing({ tokenId: token.id, amount: data.amount });
 			toast({
 				title: 'Anúncio enviado com sucesso!',
-				description:
-					'Anúncio enviado com sucesso, aguarde a confirmação da transação!'
+				description: 'Aguarde a confirmação da transação!'
 			});
 		} catch (error) {
 			toast({
