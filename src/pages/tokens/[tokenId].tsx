@@ -49,13 +49,9 @@ import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { FaEthereum } from 'react-icons/fa';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import {
-	CallExceptionError,
-	formatEther,
-	isCallException,
-	isError
-} from 'ethers';
+import { CallExceptionError, formatEther, isCallException } from 'ethers';
 import { toast } from '@/components/ui/use-toast';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 const TokenContext = createContext<TokenInfo>({} as TokenInfo);
 
@@ -454,7 +450,9 @@ const TokenInfoPage = () => {
 					{tokenInfo.description}
 				</h2>
 
-				<article className="w-full text-justify">{text}</article>
+				<article className="w-full text-justify">
+					<ReactMarkdown>{text}</ReactMarkdown>
+				</article>
 			</div>
 		</div>
 	);
