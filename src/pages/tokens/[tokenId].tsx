@@ -294,7 +294,7 @@ const BuyNowDialog = () => {
 		setDialogOpen(false);
 	};
 
-	if (!token.sellingListing) {
+	if (!token.sellingListing?.price) {
 		return <></>;
 	}
 
