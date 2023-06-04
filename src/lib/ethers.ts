@@ -1,5 +1,5 @@
 import { setUserAddress } from '@/stores/ethers';
-import { ethers, parseEther } from 'ethers';
+import { BigNumberish, ethers, parseEther } from 'ethers';
 
 import abi from './Encode.json';
 
@@ -112,7 +112,7 @@ export interface TokenInfo {
 	description: string;
 	creationDate: Date;
 	sellingListing: {
-		price: number;
+		price: BigNumberish;
 		creationDate: Date;
 	};
 }
@@ -133,7 +133,7 @@ export async function getTokensOfOwner(address: string): Promise<TokenInfo[]> {
 				title: token.metadata.title,
 				description: token.metadata.description,
 				sellingListing: {
-					price: Number(token.sellingListing.price),
+					price: BigInt(token.sellingListing.price),
 					creationDate: new Date(
 						Number(token.sellingListing.creationDate) * 1000
 					)
@@ -165,7 +165,7 @@ export async function getTokenById(id: number): Promise<TokenInfo> {
 				title: token.metadata.title,
 				description: token.metadata.description,
 				sellingListing: {
-					price: Number(token.sellingListing.price),
+					price: BigInt(token.sellingListing.price),
 					creationDate: new Date(
 						Number(token.sellingListing.creationDate) * 1000
 					)
@@ -196,7 +196,7 @@ export async function listTokens(): Promise<TokenInfo[]> {
 					title: token.metadata.title,
 					description: token.metadata.description,
 					sellingListing: {
-						price: Number(token.sellingListing.price),
+						price: BigInt(token.sellingListing.price),
 						creationDate: new Date(
 							Number(token.sellingListing.creationDate) * 1000
 						)
@@ -235,7 +235,7 @@ export async function createBuyingRequest({
 export interface BuyingRequest {
 	id: number;
 	buyer: string;
-	offer: number;
+	offer: BigNumberish;
 	creationDate: Date;
 	status: number;
 }
@@ -257,7 +257,7 @@ export async function getBuyingRequests({
 				requests.map((request: any) => ({
 					id: Number(request.id),
 					buyer: request.buyer,
-					offer: Number(request.offer),
+					offer: request.offer,
 					creationDate: new Date(Number(request.timestamp) * 1000),
 					status: request.status
 				}))
@@ -364,8 +364,28 @@ export async function cancelSellingListing({
 	}
 }
 
+interface BuyTokenParams {
+	tokenId: number;
+	amount: BigNumberish;
+}
+
+export async function buyToken({ tokenId, amount }: BuyTokenParams) {
+	const contract = await getEncodeContract({ signed: true });
+
+	try {
+		if (contract) {
+			const tx = contract.buyToken(tokenId, { value: amount });
+			await tx;
+		} else {
+			throw new Error('Contract not found!');
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 export interface SellingListing {
-	price: number;
+	price: BigNumberish;
 	creationDate: Date;
 }
 
@@ -382,7 +402,7 @@ export async function getSellingListing({
 		if (contract) {
 			const listing = await contract.getSellingListing(tokenId);
 			return {
-				price: Number(listing.price),
+				price: BigInt(listing.price),
 				creationDate: new Date(Number(listing.timestamp) * 1000)
 			};
 		} else {

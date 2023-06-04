@@ -3,6 +3,7 @@ import { Separator } from '@/components/ui/separator';
 import {
 	acceptBuyingRequest,
 	BuyingRequest,
+	buyToken,
 	cancelBuyingRequest,
 	cancelSellingListing,
 	createBuyingRequest,
@@ -291,6 +292,7 @@ const BuyNowDialog = () => {
 	const [dialogOpen, setDialogOpen] = useState(false);
 
 	const onClickBuy = () => {
+		buyToken({ tokenId: token.id, amount: token.sellingListing.price });
 		setDialogOpen(false);
 	};
 
