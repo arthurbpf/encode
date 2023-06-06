@@ -1,4 +1,4 @@
-# Smart contract da aplicação Encode
+# Frontend da aplicação Encode
 
 ## Descrição
 
