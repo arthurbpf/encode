@@ -1,38 +1,42 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Smart contract da aplicação Encode
 
-## Getting Started
+## Descrição
 
-First, run the development server:
+Este repositório contém o frontend da aplicação Encode.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+Este arquivo irá detalhar os passos necessários para rodar a aplicação localmente
+
+A aplicação também está disponível em: https://tcc.arthurbpf.com
+
+## Pré-requisitos
+
+### Pinata
+
+Para utilizar a aplicação é necessário ter uma conta na Pinata. Para criar uma conta, siga as instruções presentes no [site oficial](https://pinata.cloud).
+
+Após criar a conta, crie uma nova chave para o projeto e copie os `API Key` e o `API Secret` para um arquivo `.env.local` na raiz do projeto, com as seguintes variáveis:
+
+```
+PINATA_API_KEY="API Key"
+PINATA_SECRET_API_KEY="API Secret"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Metamask
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Para utilizar a aplicação é necessário ter o Metamask instalado no navegador. Para instalar o Metamask, siga as instruções presentes no [site oficial](https://metamask.io/download.html).
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Contrato inteligente
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Caso queira alterar o endereco do contrato inteligente, altere a variável `NEXT_PUBLIC_CONTRACT_ADDRESS` no arquivo `.env` para o endereço do contrato inteligente desejado.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Node.js e pnpm
 
-## Learn More
+Para utilizar a aplicação é necesário o Node.js instalado na máquina. Para o desenvolvimento, foi utilizada a versão 20.2.
 
-To learn more about Next.js, take a look at the following resources:
+É necessário também o gerenciador de pacotes pnpm, que pode ser instalado através do comando `npm install -g pnpm` ou através das orientações presentes na [documentação oficial](https://pnpm.io/installation).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Com o Node.js e o pnpm instalados, execute o comando `pnpm install` na pasta raiz para instalar as dependências do projeto.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Após instalar as dependências, execute o comando `pnpm dev` para iniciar o servidor de desenvolvimento.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Caso deseje rodar uma versão de produção, execute o comando `pnpm build` para gerar os arquivos de produção e `pnpm start` para iniciar o servidor de produção.
