@@ -35,6 +35,8 @@ Para utilizar a aplicação é necesário o Node.js instalado na máquina. Para 
 
 É necessário também o gerenciador de pacotes pnpm, que pode ser instalado através do comando `npm install -g pnpm` ou através das orientações presentes na [documentação oficial](https://pnpm.io/installation).
 
+## Rodando a aplicação
+
 Com o Node.js e o pnpm instalados, execute o comando `pnpm install` na pasta raiz para instalar as dependências do projeto.
 
 Após instalar as dependências, execute o comando `pnpm dev` para iniciar o servidor de desenvolvimento.
