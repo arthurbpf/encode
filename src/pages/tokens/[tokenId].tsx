@@ -420,7 +420,7 @@ const TokenInfoPage = () => {
 
 	return (
 		<div className="align-center flex w-screen flex-col items-center justify-center gap-10 p-6">
-			<h1 className="flex h-10 scroll-m-20 items-center space-x-4 text-3xl font-extrabold tracking-tight lg:text-4xl">
+			<h1 className="flex h-10 scroll-m-20 items-center space-x-4 font-extrabold tracking-tight lg:text-2xl xl:text-3xl">
 				<span># {tokenInfo.id}</span>
 				<Separator orientation="vertical" />
 				<span>{tokenInfo.title}</span>
